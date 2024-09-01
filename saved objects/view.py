@@ -19,7 +19,7 @@ def render_text(text, pos, color=(0, 0, 0), size=24, centerx=False, centery=Fals
         text_rect.y = pos[1]
     screen.blit(text_img, text_rect)
 
-file = open("bot.dat")
+file = open("bot.dat")#имя вводить сюда
 text = file.readline()
 file.close()
 
@@ -135,27 +135,27 @@ def layer_to_text(layer_condition, layer_operators):
 
 def command_to_text(cmd):
     ret = ""
-    if cmd[0] % 32 == 0 or cmd[0] % 32 == 23:
+    if cmd[0] % 32 == 0 or cmd[0] % 32 == 25:
         ret = "фотосинтез"
-    elif cmd[0] % 32 == 1 or cmd[0] % 32 == 24:
+    elif cmd[0] % 32 == 1 or cmd[0] % 32 == 26:
         ret = "преобразовать минералы в энергию"
-    elif cmd[0] % 32 == 2 or cmd[0] % 32 == 25:
+    elif cmd[0] % 32 == 2 or cmd[0] % 32 == 27:
         ret = "походить абсолютно"
-    elif cmd[0] % 32 == 3 or cmd[0] % 32 == 26:
+    elif cmd[0] % 32 == 3 or cmd[0] % 32 == 28:
         ret = "походить в направлении "
         ret += str(cmd[1] % 8)
-    elif cmd[0] % 32 == 4 or cmd[0] % 32 == 27:
+    elif cmd[0] % 32 == 4 or cmd[0] % 32 == 29:
         ret = "атаковать абсолютно"
-    elif cmd[0] % 32 == 5 or cmd[0] % 32 == 28:
+    elif cmd[0] % 32 == 5 or cmd[0] % 32 == 30:
         ret = "атаковать в направлении "
         ret += str(cmd[1] % 8)
-    elif cmd[0] % 32 == 6 or cmd[0] % 32 == 29:
+    elif cmd[0] % 32 == 6 or cmd[0] % 32 == 31:
         ret = "повернуться на "
         ret += str(cmd[1] % 8)
-    elif cmd[0] % 32 == 7 or cmd[0] % 32 == 30:
+    elif cmd[0] % 32 == 7:
         ret = "сменить направление на "
         ret += str(cmd[1] % 8)
-    elif cmd[0] % 32 == 8 or cmd[0] % 32 == 31:
+    elif cmd[0] % 32 == 8:
         ret = "отдать часть ресурсов абсолютно"
     elif cmd[0] % 32 == 9:
         ret = "отдать часть ресурсов в направлении "
@@ -190,6 +190,11 @@ def command_to_text(cmd):
         ret = "записать направление в память"
     elif cmd[0] % 32 == 22:
         ret = "записать зрение в память"
+    elif cmd[0] % 32 == 23:
+        ret = "рекомбинация в направлении "
+        ret += str(cmd[1] % 8)
+    elif cmd[0] % 32 == 24:
+        ret = "рекомбинация абсолютно"
     return(ret)
 
 def layer_command_to_text(layer_command):
@@ -204,8 +209,6 @@ for i in range(7):
 
 for i in range(8):
     genom_view[i * 2 + 1] = layer_command_to_text(commands[i])
-
-
 
 def draw():
     screen.fill((255, 255, 255))

@@ -55,7 +55,8 @@ public class Bot{
 	private int c_green = 0;
 	private int c_blue = 0;
 	private int sector_len = world_scale[1] / 8;
-	private int stop = 0;
+	public int stop = 0;
+	public int recomb_time = 0;
 	public Bot(int new_xpos, int new_ypos, Color new_color, int new_energy, int[][] new_map, ArrayList<Bot> new_objects) {
 		xpos = new_xpos;
 		ypos = new_ypos;
@@ -130,8 +131,14 @@ public class Bot{
 				}catch (java.lang.IllegalArgumentException ex){
 					System.out.println(memory);
 				}
-			}else if (draw_type == 5) {//памяти
-				canvas.setColor(new Color(0, 255 - stop * 32, stop * 32));
+			}else if (draw_type == 6) {//слоя мозга
+				int u = stop * 32;
+				if (u > 255) {
+					u = 255;
+				}
+				canvas.setColor(new Color(0, 255 - u, u));
+			}else if (draw_type == 7) {//рекомбинации
+				canvas.setColor(new Color(255 / 9 * recomb_time, 255 / 9 * recomb_time, 255 - 255 / 9 * recomb_time));
 			}
 			canvas.fillRect(x + 1, y + 1, 8, 8);
 		}else {//рисуем органику
@@ -148,8 +155,8 @@ public class Bot{
 					memory = 63;
 				}
 				int sector = bot_in_sector();
-				energy -= 1;
-				age -= 1;
+				energy--;
+				age--;
 				if (sector <= 7 & sector >= 5) {
 					minerals += minerals_list[sector - 5];
 				}
@@ -172,6 +179,9 @@ public class Bot{
 				}
 				if (minerals > 1000) {
 					minerals = 1000;
+				}
+				if (recomb_time > 0) {
+					recomb_time--;
 				}
 			}else if (state == 1) {//падающая органика
 				move(4);
@@ -293,44 +303,44 @@ public class Bot{
 	public void command(int index, ListIterator<Bot> iterator) {
 		for (int i = 0; i < 2; i++) {
 			int[] command = commands[index][i];
-			if (command[0] % 32 == 0 || command[0] % 32 == 23) {//фотосинтез
+			if (command[0] % 32 == 0 || command[0] % 32 == 25) {//фотосинтез
 				int sector = bot_in_sector();
 				if (sector <= 5) {
 					energy += photo_list[sector];
 					c_green += 1;
 				}
 				break;
-			}else if (command[0] % 32 == 1 || command[0] % 32 == 24) {//минералы в энергию
+			}else if (command[0] % 32 == 1 || command[0] % 32 == 26) {//минералы в энергию
 				if (minerals > 0) {
 					c_blue++;
 				}
 				energy += minerals * 4;
 				minerals = 0;
 				break;
-			}else if (command[0] % 32 == 2 || command[0] % 32 == 25) {//походить абсолютно
+			}else if (command[0] % 32 == 2 || command[0] % 32 == 27) {//походить абсолютно
 				int sens = move(rotate);
 				if (sens == 1) {
 					energy -= 1;
 				}
 				break;
-			}else if (command[0] % 32 == 3 || command[0] % 32 == 26) {//походить относительно
+			}else if (command[0] % 32 == 3 || command[0] % 32 == 28) {//походить относительно
 				int sens = move(command[1] % 8);
 				if (sens == 1) {
 					energy -= 1;
 				}
 				break;
-			}else if (command[0] % 32 == 4 || command[0] % 32 == 27) {//атаковать абсолютно
+			}else if (command[0] % 32 == 4 || command[0] % 32 == 29) {//атаковать абсолютно
 				attack(rotate);
 				break;
-			}else if (command[0] % 32 == 5 || command[0] % 32 == 28) {//атаковать относительно
+			}else if (command[0] % 32 == 5 || command[0] % 32 == 30) {//атаковать относительно
 				attack(command[1] % 8);
 				break;
-			}else if (command[0] % 32 == 6 || command[0] % 32 == 29) {//повернуться
+			}else if (command[0] % 32 == 6 || command[0] % 32 == 31) {//повернуться
 				rotate += command[1] % 8;
 				rotate %= 8;
-			}else if (command[0] % 32 == 7 || command[0] % 32 == 30) {//сменить направление
+			}else if (command[0] % 32 == 7) {//сменить направление
 				rotate = command[1] % 8;
-			}else if (command[0] % 32 == 8 || command[0] % 32 == 31) {//отдать часть ресурсов абсолютно
+			}else if (command[0] % 32 == 8) {//отдать часть ресурсов абсолютно
 				give(rotate);
 				break;
 			}else if (command[0] % 32 == 9) {//отдать часть ресурсов относительно
@@ -377,6 +387,95 @@ public class Bot{
 				memory = rotate * 8;
 			}else if (command[0] % 32 == 22) {//записать зрение в память
 				memory = see(rotate) * 15;
+			}else if (command[0] % 32 == 23) {//рекомбинация относительно
+				recombination(command[1] % 8);
+			}else if (command[0] % 32 == 24) {//рекомбинация абсолютно
+				recombination(rotate);
+			}
+		}
+	}
+	public void recombination(int rot) {
+		int[] pos = get_rotate_position(rot);
+		if (pos[1] > 0 && pos[1] < world_scale[1]) {
+			if (map[pos[0]][pos[1]] == 1) {
+				Bot b = find(pos);
+				if (b != null) {
+					recomb_time = 9;
+					int red = (color.getRed() + b.color.getRed()) / 2;
+					int green = (color.getGreen() + b.color.getGreen()) / 2;
+					int blue = (color.getBlue() + b.color.getBlue()) / 2;
+					color = new Color(red, green, blue);
+					b.color = new Color(red, green, blue);
+					//
+					int[][] new_operators = new int[7][2];
+					int[][][] new_conditions = new int[7][3][9];
+					int[][][] new_commands = new int[8][2][2];
+					//
+					for (int i = 0; i < 7; i++) {
+						if (rand.nextInt(2) == 0) {
+							for (int j = 0; j < 2; j++) {
+								new_operators[i][j] = operators[i][j];
+							}
+						}else {
+							for (int j = 0; j < 2; j++) {
+								new_operators[i][j] = b.operators[i][j];
+							}
+						}
+					}
+					for (int i = 0; i < 7; i++) {
+						if (rand.nextInt(2) == 0) {
+							for (int j = 0; j < 3; j++) {
+								for (int k = 0; k < 9; k++) {
+									new_conditions[i][j][k] = conditions[i][j][k];
+								}
+							}
+						}else {
+							for (int j = 0; j < 3; j++) {
+								for (int k = 0; k < 9; k++) {
+									new_conditions[i][j][k] = b.conditions[i][j][k];
+								}
+							}
+						}
+					}
+					for (int i = 0; i < 8; i++) {
+						if (rand.nextInt(2) == 0) {
+							for (int j = 0; j < 2; j++) {
+								for (int k = 0; k < 2; k++) {
+									new_commands[i][j][k] = commands[i][j][k];
+								}
+							}
+						}else {
+							for (int j = 0; j < 2; j++) {
+								for (int k = 0; k < 2; k++) {
+									new_commands[i][j][k] = b.commands[i][j][k];
+								}
+							}
+						}
+					}
+					//
+					for (int i = 0; i < 7; i++) {
+						for (int j = 0; j < 2; j++) {
+							operators[i][j] = new_operators[i][j];
+							b.operators[i][j] = new_operators[i][j];
+						}
+					}
+					for (int i = 0; i < 7; i++) {
+						for (int j = 0; j < 3; j++) {
+							for (int k = 0; k < 9; k++) {
+								conditions[i][j][k] = new_conditions[i][j][k];
+								b.conditions[i][j][k] = new_conditions[i][j][k];
+							}
+						}
+					}
+					for (int i = 0; i < 8; i++) {
+						for (int j = 0; j < 2; j++) {
+							for (int k = 0; k < 2; k++) {
+								commands[i][j][k] = new_commands[i][j][k];
+								b.commands[i][j][k] = new_commands[i][j][k];
+							}
+						}
+					}
+				}
 			}
 		}
 	}

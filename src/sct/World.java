@@ -102,6 +102,16 @@ public class World extends JPanel{
 		color_button.setBounds(W - 300, 240, 125, 20);
         add(color_button);
         //
+        JButton brain_layer_button = new JButton("Brain layer");
+        brain_layer_button.addActionListener(new dr7());
+        brain_layer_button.setBounds(W - 170, 265, 125, 20);
+        add(brain_layer_button);
+        //
+        JButton recomb_button = new JButton("Recombination");
+        recomb_button.addActionListener(new dr8());
+        recomb_button.setBounds(W - 300, 265, 125, 20);
+        add(recomb_button);
+        //
         JButton memory_button = new JButton("Memory");
         memory_button.addActionListener(new dr6());
 		memory_button.setBounds(W - 170, 240, 125, 20);
@@ -109,61 +119,61 @@ public class World extends JPanel{
         //
         JButton select_button = new JButton("Select");
         select_button.addActionListener(new select());
-		select_button.setBounds(W - 300, 455, 95, 20);
+		select_button.setBounds(W - 300, 485, 95, 20);
         add(select_button);
         //
         JButton set_button = new JButton("Set");
         set_button.addActionListener(new set());
-        set_button.setBounds(W - 200, 455, 95, 20);
+        set_button.setBounds(W - 200, 485, 95, 20);
         add(set_button);
         //
         JButton remove_button = new JButton("Remove");
         remove_button.addActionListener(new remove());
-        remove_button.setBounds(W - 100, 455, 95, 20);
+        remove_button.setBounds(W - 100, 485, 95, 20);
         add(remove_button);
         //
         save_button.addActionListener(new save_bot());
-        save_button.setBounds(W - 300, 365, 125, 20);
+        save_button.setBounds(W - 300, 445, 125, 20);
         save_button.setEnabled(false);
         add(save_button);
         //
         show_brain_button.addActionListener(new shbr());
-        show_brain_button.setBounds(W - 170, 365, 125, 20);
+        show_brain_button.setBounds(W - 170, 445, 125, 20);
         show_brain_button.setEnabled(false);
         add(show_brain_button);
         //
-        for_save.setBounds(W - 300, 410, 250, 20);
+        for_save.setBounds(W - 300, 420, 250, 20);
         add(for_save);
         //
-        for_load.setBounds(W - 300, 515, 250, 20);
+        for_load.setBounds(W - 300, 545, 250, 20);
         add(for_load);
         //
         JButton load_bot_button = new JButton("Load bot");
         load_bot_button.addActionListener(new load_bot());
-        load_bot_button.setBounds(W - 300, 540, 125, 20);
+        load_bot_button.setBounds(W - 300, 570, 125, 20);
         add(load_bot_button);
         //
         JButton load_world_button = new JButton("Load world");
         //load_world_button.addActionListener(new remove());
-        load_world_button.setBounds(W - 170, 540, 125, 20);
+        load_world_button.setBounds(W - 170, 570, 125, 20);
         add(load_world_button);
         //
         JButton new_population_button = new JButton("New population");
         new_population_button.addActionListener(new nwp());
-        new_population_button.setBounds(W - 300, 590, 125, 20);
+        new_population_button.setBounds(W - 300, 610, 125, 20);
         add(new_population_button);
         //
         render_button.addActionListener(new rndr());
-        render_button.setBounds(W - 300, 615, 125, 20);
+        render_button.setBounds(W - 300, 635, 125, 20);
         add(render_button);
         //
         record_button.addActionListener(new rcrd());
-        record_button.setBounds(W - 170, 615, 125, 20);
+        record_button.setBounds(W - 170, 635, 125, 20);
         add(record_button);
         //
         JButton kill_button = new JButton("Kill all");
         kill_button.addActionListener(new kill_all());
-        kill_button.setBounds(W - 170, 590, 125, 20);
+        kill_button.setBounds(W - 170, 610, 125, 20);
         add(kill_button);
         //
 		timer.start();
@@ -191,7 +201,7 @@ public class World extends JPanel{
 		canvas.setColor(black);
 		canvas.setFont(new Font("arial", Font.BOLD, 18));
 		canvas.drawString("Main: ", W - 300, 20);
-		canvas.drawString("version 1.0", W - 300, 40);
+		canvas.drawString("version 1.1", W - 300, 40);
 		canvas.drawString("steps: " + String.valueOf(steps), W - 300, 60);
 		canvas.drawString("objects: " + String.valueOf(obj_count) + ", bots: " + String.valueOf(b_count), W - 300, 80);
 		if (draw_type == 0) {
@@ -206,6 +216,10 @@ public class World extends JPanel{
 			txt = "age view";
 		}else if (draw_type == 5) {
 			txt = "memory view";
+		}else if (draw_type == 6) {
+			txt = "brain layer view";
+		}else if (draw_type == 7) {
+			txt = "recombination view";
 		}
 		canvas.drawString("render type: " + txt, W - 300, 100);
 		if (mouse == 0) {
@@ -217,23 +231,24 @@ public class World extends JPanel{
 		}
 		canvas.drawString("mouse function: " + txt2, W - 300, 120);
 		canvas.drawString("Render types:", W - 300, 180);
-		canvas.drawString("Selection:", W - 300, 275);
-		canvas.drawString("enter name:", W - 300, 405);
-		canvas.drawString("Mouse functions:", W - 300, 445);
-		canvas.drawString("Load:", W - 300, 490);
-		canvas.drawString("enter name:", W - 300, 510);
-		canvas.drawString("Controls:", W - 300, 580);
+		canvas.drawString("Selection:", W - 300, 300);
+		canvas.drawString("enter name:", W - 300, 415);
+		canvas.drawString("Mouse functions:", W - 300, 480);
+		canvas.drawString("Load:", W - 300, 520);
+		canvas.drawString("enter name:", W - 300, 540);
+		canvas.drawString("Controls:", W - 300, 605);
 		if (selection != null) {
-			canvas.drawString("energy: " + String.valueOf(selection.energy) + ", minerals: " + String.valueOf(selection.minerals), W - 300, 295);
-			canvas.drawString("age: " + String.valueOf(selection.age), W - 300, 315);
-			canvas.drawString("position: " + "[" + String.valueOf(selection.xpos) + ", " + String.valueOf(selection.ypos) + "]" + ", memory: " + String.valueOf(selection.memory), W - 300, 335);
-			canvas.drawString("color: " + "(" + String.valueOf(selection.color.getRed()) + ", " + String.valueOf(selection.color.getGreen()) + ", " + String.valueOf(selection.color.getBlue()) + ")", W - 300, 355);
+			canvas.drawString("energy: " + String.valueOf(selection.energy) + ", minerals: " + String.valueOf(selection.minerals), W - 300, 320);
+			canvas.drawString("age: " + String.valueOf(selection.age), W - 300, 340);
+			canvas.drawString("position: " + "[" + String.valueOf(selection.xpos) + ", " + String.valueOf(selection.ypos) + "]", W - 300, 360);
+			canvas.drawString("color: " + "(" + String.valueOf(selection.color.getRed()) + ", " + String.valueOf(selection.color.getGreen()) + ", " + String.valueOf(selection.color.getBlue()) + ")", W - 300, 380);
+			canvas.drawString("memory: " + String.valueOf(selection.memory), W - 300, 400);
 			canvas.setColor(new Color(90, 90, 90, 90));
 			canvas.fillRect(0, 0, W - 300, 1080);
 			canvas.setColor(new Color(255, 0, 0));
 			canvas.fillRect(selection.xpos * 10, selection.ypos * 10, 10, 10);
 		}else {
-			canvas.drawString("none", W - 300, 295);
+			canvas.drawString("none", W - 300, 320);
 		}
 		if (sh_brain) {
 			canvas.setColor(new Color(90, 90, 90));
@@ -286,10 +301,30 @@ public class World extends JPanel{
 				}
 				g2d.dispose();
 				//
+				BufferedImage buff5 = new BufferedImage(world_scale[0] * 10, world_scale[1] * 10, BufferedImage.TYPE_INT_RGB);
+				g2d = buff5.createGraphics();
+				g2d.setColor(Color.WHITE);
+				g2d.fillRect(0, 0, 1920, 1080);
+				for(Bot b: objects) {
+					b.Draw(g2d, 6);
+				}
+				g2d.dispose();
+				//
+				BufferedImage buff6 = new BufferedImage(world_scale[0] * 10, world_scale[1] * 10, BufferedImage.TYPE_INT_RGB);
+				g2d = buff6.createGraphics();
+				g2d.setColor(Color.WHITE);
+				g2d.fillRect(0, 0, 1920, 1080);
+				for(Bot b: objects) {
+					b.Draw(g2d, 7);
+				}
+				g2d.dispose();
+				//
 				ImageIO.write(buff, "png", new File("record/predators/screen" + String.valueOf(steps / 25)+ ".png"));
 				ImageIO.write(buff2, "png", new File("record/energy/screen" + String.valueOf(steps / 25)+ ".png"));
 				ImageIO.write(buff3, "png", new File("record/color/screen" + String.valueOf(steps / 25)+ ".png"));
 				ImageIO.write(buff4, "png", new File("record/memory/screen" + String.valueOf(steps / 25)+ ".png"));
+				ImageIO.write(buff5, "png", new File("record/brain_layer/screen" + String.valueOf(steps / 25)+ ".png"));
+				ImageIO.write(buff6, "png", new File("record/recombination/screen" + String.valueOf(steps / 25)+ ".png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -499,6 +534,16 @@ public class World extends JPanel{
 	private class dr6 implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			draw_type = 5;
+		}
+	}
+	private class dr7 implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			draw_type = 6;
+		}
+	}
+	private class dr8 implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			draw_type = 7;
 		}
 	}
 	private class start_stop implements ActionListener{
