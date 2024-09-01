@@ -343,9 +343,25 @@ public class World extends JPanel{
 					if (Map[botpos[0]][botpos[1]] == 0) {
 						if (for_set_operators != null && for_set_conditions != null && for_set_commands != null) {
 							Bot new_bot = new Bot(botpos[0], botpos[1], new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)), 1000, Map, objects);
-							new_bot.operators = for_set_operators;
-							new_bot.commands = for_set_commands;
-							new_bot.conditions = for_set_conditions;
+							for (int i = 0; i < 7; i++) {
+								for (int j = 0; j < 2; j++) {
+									new_bot.operators[i][j] = for_set_operators[i][j];
+								}
+							}
+							for (int i = 0; i < 7; i++) {
+								for (int j = 0; j < 3; j++) {
+									for (int k = 0; k < 9; k++) {
+										new_bot.conditions[i][j][k] = for_set_conditions[i][j][k];
+									}
+								}
+							}
+							for (int i = 0; i < 8; i++) {
+								for (int j = 0; j < 2; j++) {
+									for (int k = 0; k < 2; k++) {
+										new_bot.commands[i][j][k] = for_set_commands[i][j][k];
+									}
+								}
+							}
 							objects.add(new_bot);
 							Map[botpos[0]][botpos[1]] = 1;
 						}
@@ -371,9 +387,25 @@ public class World extends JPanel{
 					if (Map[botpos[0]][botpos[1]] == 0) {
 						if (for_set_operators != null && for_set_conditions != null && for_set_commands != null) {
 							Bot new_bot = new Bot(botpos[0], botpos[1], new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)), 1000, Map, objects);
-							new_bot.operators = for_set_operators;
-							new_bot.commands = for_set_commands;
-							new_bot.conditions = for_set_conditions;
+							for (int i = 0; i < 7; i++) {
+								for (int j = 0; j < 2; j++) {
+									new_bot.operators[i][j] = for_set_operators[i][j];
+								}
+							}
+							for (int i = 0; i < 7; i++) {
+								for (int j = 0; j < 3; j++) {
+									for (int k = 0; k < 9; k++) {
+										new_bot.conditions[i][j][k] = for_set_conditions[i][j][k];
+									}
+								}
+							}
+							for (int i = 0; i < 8; i++) {
+								for (int j = 0; j < 2; j++) {
+									for (int k = 0; k < 2; k++) {
+										new_bot.commands[i][j][k] = for_set_commands[i][j][k];
+									}
+								}
+							}
 							objects.add(new_bot);
 							Map[botpos[0]][botpos[1]] = 1;
 						}

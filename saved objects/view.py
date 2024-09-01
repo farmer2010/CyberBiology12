@@ -19,7 +19,7 @@ def render_text(text, pos, color=(0, 0, 0), size=24, centerx=False, centery=Fals
         text_rect.y = pos[1]
     screen.blit(text_img, text_rect)
 
-file = open("bot2.dat")
+file = open("bot.dat")
 text = file.readline()
 file.close()
 
@@ -53,90 +53,6 @@ for i in range(8):
         sec2_symbols = sec2_layer[j].split(" ")
         for k in range(2):
             commands[i][j][k] = int(sec2_symbols[k])
-
-file = open("bot.dat")
-text = file.readline()
-file.close()
-
-operators2 = [[0 for j in range(2)] for i in range(7)]
-conditions2 = [[[0 for k in range(9)] for j in range(3)] for i in range(7)]
-commands2 = [[[0 for k in range(2)] for j in range(2)] for i in range(8)]
-
-sec = text.split(";")
-
-sec0_layers = sec[0].split(":")
-for i in range(7):
-    sec0_layer = sec0_layers[i].split(" ")
-    for j in range(2):
-        operators2[i][j] = int(sec0_layer[j])
-
-sec1_layers = sec[1].split("/")
-for i in range(7):
-    sec1_layer = sec1_layers[i].split(":")
-    for j in range(3):
-        sec1_symbols = sec1_layer[j].split(" ")
-        for k in range(9):
-            conditions2[i][j][k] = int(sec1_symbols[k])
-
-sec2_layers = sec[2].split("/")
-for i in range(8):
-    sec2_layer = sec2_layers[i].split(":")
-    for j in range(2):
-        sec2_symbols = sec2_layer[j].split(" ")
-        for k in range(2):
-            commands2[i][j][k] = int(sec2_symbols[k])
-
-#for i in range(7):
-#    for j in range(2):
-#        if rand(0, 1):
-#            operators[i][j] = operators2[i][j]
-
-#for i in range(7):
-#    for j in range(3):
-#        for k in range(9):
-#            if rand(0, 1):
-#                conditions[i][j][k] = conditions2[i][j][k]
-
-#for i in range(8):
-#    for j in range(2):
-#        for k in range(2):
-#            if rand(0, 1):
-#                commands[i][j][k] = commands2[i][j][k]
-for i in range(7):
-    if rand(0, 1):
-        commands[i] = commands2[i]
-    if rand(0, 1):
-        operators[i] = operators2[i]
-        conditions[i] = conditions2[i]
-if rand(0, 1):
-    commands[7] = commands2[7]
-
-text = ""
-for i in range(7):
-    for j in range(2):
-        text += str(operators[i][j]) + " "
-    text += ":"
-text += ";"
-
-for i in range(7):
-    for j in range(3):
-        for k in range(9):
-            text += str(conditions[i][j][k]) + " "
-        text += ":"
-    text += "/"
-text += ";"
-
-for i in range(8):
-    for j in range(2):
-        for k in range(2):
-            text += str(commands[i][j][k]) + " "
-        text += ":"
-    text += "/"
-text += ";"
-
-file = open("recombination3.dat", "w")
-file.write(text)
-file.close()
 
 def number_to_text(numbers):
     ret = ""
