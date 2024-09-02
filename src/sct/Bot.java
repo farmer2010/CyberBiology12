@@ -652,7 +652,7 @@ public class Bot{
 					if (rand.nextInt(500) == 0) {
 						new_color = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
 					}else {
-						new_color = new Color(border(color.getRed() + rand.nextInt(-12, 12), 255, 0), border(color.getGreen() + rand.nextInt(-12, 12), 255, 0), border(color.getBlue() + rand.nextInt(-12, 12), 255, 0));
+						new_color = new Color(border(color.getRed() + rand.nextInt(-12, 13), 255, 0), border(color.getGreen() + rand.nextInt(-12, 13), 255, 0), border(color.getBlue() + rand.nextInt(-12, 13), 255, 0));
 					}
 					//
 					int[][] new_operators = new int[7][2];
