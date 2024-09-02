@@ -681,7 +681,7 @@ public class Bot{
 					if (rand.nextInt(4) == 0) {//мутация
 						new_operators[rand.nextInt(7)][rand.nextInt(2)] = rand.nextInt(64);
 						new_conditions[rand.nextInt(7)][rand.nextInt(3)][rand.nextInt(9)] = rand.nextInt(64);
-						new_commands[rand.nextInt(8)][rand.nextInt(2)][rand.nextInt(2)] = rand.nextInt(64);
+						new_commands[rand.nextInt(8)][rand.nextInt(4)][rand.nextInt(2)] = rand.nextInt(64);
 					}
 					//
 					Bot new_bot = new Bot(pos[0], pos[1], new_color, energy / 2, map, objects);
