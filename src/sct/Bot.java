@@ -37,26 +37,14 @@ public class Bot{
 		{-1, 0},
 		{-1, -1}
 	};
-	private int[] minerals_list = {
-		1,
-		2,
-		3
-	};
-	private int[] photo_list = {
-		10,
-		8,
-		6,
-		5,
-		4,
-		3
-	};
-	private int[] world_scale = {100, 100};
+	private int[] world_scale = {162, 108};
 	private int c_red = 0;
 	private int c_green = 0;
 	private int c_blue = 0;
-	private int sector_len = world_scale[1] / 8;
 	public int stop = 0;
 	public int recomb_time = 0;
+	private int tm = 0;
+	private boolean on_land = false;
 	public Bot(int new_xpos, int new_ypos, Color new_color, int new_energy, int[][] new_map, ArrayList<Bot> new_objects) {
 		xpos = new_xpos;
 		ypos = new_ypos;
@@ -148,19 +136,29 @@ public class Bot{
 			canvas.fillRect(x + 2, y + 2, 6, 6);
 		}
 	}
-	public int Update(ListIterator<Bot> iterator) {
+	public int Update(ListIterator<Bot> iterator, int[] adaptation) {
 		if (killed == 0) {
 			if (state == 0) {//бот
 				if (memory > 63) {
 					memory = 63;
 				}
-				int sector = bot_in_sector();
 				energy--;
 				age--;
-				if (sector <= 7 & sector >= 5) {
-					minerals += minerals_list[sector - 5];
+				int sec = bot_in_sector(adaptation);
+				if (sec == 0) {
+					on_land = true;
 				}
-				update_commands(iterator);
+				if (tm > 0) {
+					tm--;
+				}else if (tm == 0) {
+					tm = 3;
+					if (rand.nextInt(0, 1000) < adaptation[5]) {
+						killed = 1;
+						map[xpos][ypos] = 0;
+						return(0);
+					}
+				}
+				update_commands(iterator, adaptation);
 				if (energy <= 0) {
 					killed = 1;
 					map[xpos][ypos] = 0;
@@ -169,7 +167,23 @@ public class Bot{
 					energy = 1000;
 				}
 				if (energy >= 800) {//автоматическое деление
-					multiply(rotate, iterator);
+					if (sec == 0) {
+						if (rand.nextInt(0, 1000) < adaptation[6]) {
+							multiply(rotate, iterator);
+						}
+					}else if (sec == 1) {
+						if (rand.nextInt(0, 1000) < adaptation[7]) {
+							multiply(rotate, iterator);
+						}
+					}else {
+						if (on_land) {
+							multiply(rotate, iterator);
+						}else {
+							if (rand.nextInt(0, 1000) < adaptation[8]) {
+								multiply(rotate, iterator);
+							}
+						}
+					}
 				}
 				if (age <= 0) {
 					state = 1;
@@ -197,26 +211,26 @@ public class Bot{
 		}
 		return(0);
 	}
-	public void update_commands(ListIterator<Bot> iterator) {//мозг
+	public void update_commands(ListIterator<Bot> iterator, int[] adaptation) {//мозг
 		for (int i = 0; i < 8; i++) {
 			if (i < 7) {
-				if (condition2(i)) {
-					command(i, iterator);
+				if (condition2(i, adaptation)) {
+					command(i, iterator, adaptation);
 					stop = i;
 					break;
 				}
 			}else {
-				command(i, iterator);
+				command(i, iterator, adaptation);
 				stop = 8;
 			}
 		}
 	}
-	public boolean condition(int index, int index2) {
+	public boolean condition(int index, int index2, int[] adaptation) {
 		int[] cond = conditions[index][index2];
 		int[] cmd = {cond[0], cond[1], cond[2], cond[3]};
-		int num1 = number(cmd);
+		int num1 = number(cmd, adaptation);
 		int[] cmd2 = {cond[5], cond[6], cond[7], cond[8]};
-		int num2 = number(cmd2);
+		int num2 = number(cmd2, adaptation);
 		boolean ret = false;
 		if (cond[4] % 6 == 0) {//==
 			ret = num1 == num2;
@@ -233,10 +247,10 @@ public class Bot{
 		}
 		return(ret);
 	}
-	public int number(int[] cmd) {
+	public int number(int[] cmd, int[] adaptation) {
 		int ret = 0;
-		int num1 = number2(cmd[1]);
-		int num2 = number2(cmd[2]);
+		int num1 = number2(cmd[1], adaptation);
+		int num2 = number2(cmd[2], adaptation);
 		if (cmd[0] % 2 == 0) {//использовать ли математику?
 			if (cmd[3] % 4 == 0) {//сложение
 				ret = border(num1 + num2, 63, 0);
@@ -256,13 +270,13 @@ public class Bot{
 		}
 		return(ret);
 	}
-	public int number2(int num) {
+	public int number2(int num, int[] adaptation) {
 		int ret = 0;
 		if (num > 31) {
 			if (num % 8 == 0) {//энергию в число
 				ret = (int)(energy / 1000.0 * 63);
-			}else if (num % 8 == 1) {//минералы в число
-				ret = (int)(minerals / 1000.0 * 63);
+			}else if (num % 8 == 1) {//зону в число
+				ret = bot_in_sector(adaptation) * 31;
 			}else if (num % 8 == 2) {//возраст в число
 				ret = (int)(age / 1000.0 * 63);
 			}else if (num % 8 == 3) {//память в число
@@ -281,115 +295,148 @@ public class Bot{
 		}
 		return(ret);
 	}
-	public boolean condition2(int index) {
-		boolean ret = condition(index, 0);
+	public boolean condition2(int index, int[] adaptation) {
+		boolean ret = condition(index, 0, adaptation);
 		for (int i = 1; i < 3; i++) {
 			if (operators[index][i - 1] % 6 == 0) {//or
-				ret = ret || condition(index, i);
+				ret = ret || condition(index, i, adaptation);
 			}else if (operators[index][i - 1] % 6 == 1) {//and
-				ret = ret && condition(index, i);
+				ret = ret && condition(index, i, adaptation);
 			}else if (operators[index][i - 1] % 6 == 2) {//xor
-				ret = (ret || condition(index, i)) && !(ret && condition(index, i));
+				ret = (ret || condition(index, i, adaptation)) && !(ret && condition(index, i, adaptation));
 			}else if (operators[index][i - 1] % 6 == 3){//!or
-				ret = !(ret || condition(index, i));
+				ret = !(ret || condition(index, i, adaptation));
 			}else if (operators[index][i - 1] % 6 == 4){//!and
-				ret = !(ret && condition(index, i));
+				ret = !(ret && condition(index, i, adaptation));
 			}else {//!xor
-				ret = !((ret || condition(index, i)) && !(ret && condition(index, i)));
+				ret = !((ret || condition(index, i, adaptation)) && !(ret && condition(index, i, adaptation)));
 			}
 		}
 		return(ret);
 	}
-	public void command(int index, ListIterator<Bot> iterator) {
+	public void command(int index, ListIterator<Bot> iterator, int[] adaptation) {
 		for (int i = 0; i < 2; i++) {
 			int[] command = commands[index][i];
-			if (command[0] % 32 == 0 || command[0] % 32 == 25) {//фотосинтез
-				int sector = bot_in_sector();
-				if (sector <= 5) {
-					energy += photo_list[sector];
+			if (command[0] % 32 == 0 || command[0] % 32 == 24) {//фотосинтез
+				int sec = bot_in_sector(adaptation);
+				if (sec == 0) {
+					energy += adaptation[2];
 					c_green += 1;
+				}else if (sec == 1) {
+					if (rand.nextInt(0, 1000) < adaptation[3]) {
+						energy += adaptation[2];
+						c_green += 1;
+					}
+				}else {
+					if (rand.nextInt(0, 1000) < adaptation[4]) {
+						energy += adaptation[2];
+						c_green += 1;
+					}
 				}
 				break;
-			}else if (command[0] % 32 == 1 || command[0] % 32 == 26) {//минералы в энергию
-				if (minerals > 0) {
-					c_blue++;
-				}
-				energy += minerals * 4;
-				minerals = 0;
-				break;
-			}else if (command[0] % 32 == 2 || command[0] % 32 == 27) {//походить абсолютно
+			}else if (command[0] % 32 == 1 || command[0] % 32 == 25) {//походить абсолютно
 				int sens = move(rotate);
 				if (sens == 1) {
 					energy -= 1;
 				}
 				break;
-			}else if (command[0] % 32 == 3 || command[0] % 32 == 28) {//походить относительно
+			}else if (command[0] % 32 == 2 || command[0] % 32 == 26) {//походить относительно
 				int sens = move(command[1] % 8);
 				if (sens == 1) {
 					energy -= 1;
 				}
 				break;
-			}else if (command[0] % 32 == 4 || command[0] % 32 == 29) {//атаковать абсолютно
+			}else if (command[0] % 32 == 3 || command[0] % 32 == 27) {//атаковать абсолютно
 				attack(rotate);
 				break;
-			}else if (command[0] % 32 == 5 || command[0] % 32 == 30) {//атаковать относительно
+			}else if (command[0] % 32 == 4 || command[0] % 32 == 28) {//атаковать относительно
 				attack(command[1] % 8);
 				break;
-			}else if (command[0] % 32 == 6 || command[0] % 32 == 31) {//повернуться
+			}else if (command[0] % 32 == 5 || command[0] % 32 == 29) {//повернуться
 				rotate += command[1] % 8;
 				rotate %= 8;
-			}else if (command[0] % 32 == 7) {//сменить направление
+			}else if (command[0] % 32 == 6 || command[0] % 32 == 30) {//сменить направление
 				rotate = command[1] % 8;
-			}else if (command[0] % 32 == 8) {//отдать часть ресурсов абсолютно
+			}else if (command[0] % 32 == 7 || command[0] % 32 == 31) {//отдать часть ресурсов абсолютно
 				give(rotate);
 				break;
-			}else if (command[0] % 32 == 9) {//отдать часть ресурсов относительно
+			}else if (command[0] % 32 == 8) {//отдать часть ресурсов относительно
 				give(command[1] % 8);
 				break;
-			}else if (command[0] % 32 == 10) {//равномерное распределение ресурсов абсолютно
+			}else if (command[0] % 32 == 9) {//равномерное распределение ресурсов абсолютно
 				give2(rotate);
 				break;
-			}else if (command[0] % 32 == 11) {//равномерное распределение ресурсов относительно
+			}else if (command[0] % 32 == 10) {//равномерное распределение ресурсов относительно
 				give2(command[1] % 8);
 				break;
-			}else if (command[0] % 32 == 12) {//поделиться абсолютно
-				multiply(rotate, iterator);
+			}else if (command[0] % 32 == 11) {//поделиться абсолютно
+				int sec = bot_in_sector(adaptation);
+				if (sec == 0) {
+					if (rand.nextInt(0, 1000) < adaptation[6]) {
+						multiply(rotate, iterator);
+					}
+				}else if (sec == 1) {
+					if (rand.nextInt(0, 1000) < adaptation[7]) {
+						multiply(rotate, iterator);
+					}
+				}else {
+					if (on_land) {
+						multiply(rotate, iterator);
+					}else {
+						if (rand.nextInt(0, 1000) < adaptation[8]) {
+							multiply(rotate, iterator);
+						}
+					}
+				}
 				break;
-			}else if (command[0] % 32 == 13) {//поделиться относительно
-				multiply(command[1] % 8, iterator);
+			}else if (command[0] % 32 == 12) {//поделиться относительно
+				int sec = bot_in_sector(adaptation);
+				if (sec == 0) {
+					if (rand.nextInt(0, 1000) < adaptation[6]) {
+						multiply(command[1] % 8, iterator);
+					}
+				}else if (sec == 1) {
+					if (rand.nextInt(0, 1000) < adaptation[7]) {
+						multiply(command[1] % 8, iterator);
+					}
+				}else {
+					if (on_land) {
+						multiply(command[1] % 8, iterator);
+					}else {
+						if (rand.nextInt(0, 1000) < adaptation[8]) {
+							multiply(command[1] % 8, iterator);
+						}
+					}
+				}
 				break;
-			}else if (command[0] % 32 == 14) {//установить направление в случайное
+			}else if (command[0] % 32 == 13) {//установить направление в случайное
 				rotate = rand.nextInt(8);
-			}else if (command[0] % 32 == 15) {//записать в память число
+			}else if (command[0] % 32 == 14) {//записать в память число
 				memory = command[1];
-			}else if (command[0] % 32 == 16) {//записать в память случайное число
+			}else if (command[0] % 32 == 15) {//записать в память случайное число
 				memory = rand.nextInt(64);
-			}else if (command[0] % 32 == 17) {//прибавить к памяти число
+			}else if (command[0] % 32 == 16) {//прибавить к памяти число
 				memory += command[1];
 				if (memory > 63) {
 					memory = 63;
 				}
-			}else if (command[0] % 32 == 18) {//записать энергию в память
+			}else if (command[0] % 32 == 17) {//записать энергию в память
 				int m = (int)(energy / 1000.0 * 63);
 				if (m > 63) {
 					m = 63;
 				}
 				memory = m;
-			}else if (command[0] % 32 == 19) {//записать минералы в память
-				int m = (int)(minerals / 1000.0 * 63);
-				if (m > 63) {
-					m = 63;
-				}
-				memory = m;
-			}else if (command[0] % 32 == 20) {//записать возраст в память
+			}else if (command[0] % 32 == 18) {//записать зону в память
+				memory = bot_in_sector(adaptation) * 31;
+			}else if (command[0] % 32 == 19) {//записать возраст в память
 				memory = (int)(age / 1000.0 * 63);
-			}else if (command[0] % 32 == 21) {//записать направление в память
+			}else if (command[0] % 32 == 20) {//записать направление в память
 				memory = rotate * 8;
-			}else if (command[0] % 32 == 22) {//записать зрение в память
+			}else if (command[0] % 32 == 21) {//записать зрение в память
 				memory = see(rotate) * 15;
-			}else if (command[0] % 32 == 23) {//рекомбинация относительно
+			}else if (command[0] % 32 == 22) {//рекомбинация относительно
 				recombination(command[1] % 8);
-			}else if (command[0] % 32 == 24) {//рекомбинация абсолютно
+			}else if (command[0] % 32 == 23) {//рекомбинация абсолютно
 				recombination(rotate);
 			}
 		}
@@ -573,6 +620,9 @@ public class Bot{
 		return(pos);
 	}
 	public int move(int rot) {
+		if (rot == 2 || rot == 6) {
+			tm = 0;
+		}
 		int[] pos = get_rotate_position(rot);
 		if (pos[1] > 0 & pos[1] < world_scale[1]) {
 			if (map[pos[0]][pos[1]] == 0) {
@@ -645,12 +695,14 @@ public class Bot{
 			}
 		}
 	}
-	public int bot_in_sector() {
-		int sec = ypos / sector_len;
-		if (sec > 7) {
-			sec = 10;
+	public int bot_in_sector(int[] adaptation) {
+		if (ypos < world_scale[1] - adaptation[0]) {
+			return(0);
+		}else if (ypos < world_scale[1] - adaptation[1]) {
+			return(1);
+		}else {
+			return(2);
 		}
-		return(sec);
 	}
 	public int border(int number, int border1, int border2) {
 		if (number > border1) {

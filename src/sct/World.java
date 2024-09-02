@@ -32,7 +32,7 @@ public class World extends JPanel{
 	Timer timer;
 	int delay = 10;
 	Random rand = new Random();
-	int[] world_scale = {100, 100};
+	int[] world_scale = {162, 108};
 	int[][] Map = new int[world_scale[0]][world_scale[1]];//0 - none, 1 - bot, 2 - organics
 	Color gray = new Color(100, 100, 100);
 	Color green = new Color(0, 255, 0);
@@ -63,8 +63,26 @@ public class World extends JPanel{
 	JButton record_button = new JButton("Record: off");
 	JTextField for_save = new JTextField();
 	JTextField for_load = new JTextField();
+	JSlider sea_level_slider = new JSlider(0, 108, 65);
+	JSlider mud_level_slider = new JSlider(0, 108, 24);
+	JSlider pht_level_slider = new JSlider(0, 25, 8);
+	JSlider no_pht_in_sea_slider = new JSlider(0, 1000, 1000);
+	JSlider no_pht_in_mud_slider = new JSlider(0, 1000, 1000);
+	JSlider move_y_slider = new JSlider(0, 1000, 0);
+	JSlider land_multiply_slider = new JSlider(0, 1000, 1000);
+	JSlider sea_multiply_slider = new JSlider(0, 1000, 1000);
+	JSlider on_land_slider = new JSlider(0, 1000, 1000);
 	boolean sh_brain = false;
 	boolean rec = false;
+	int sea_level;
+	int mud_level;
+	int pht_level;
+	int no_pht_in_sea;
+	int no_pht_in_mud;
+	int move_y;
+	int land_multiply;
+	int sea_multiply;
+	int on_land;
 	public World() {
 		setLayout(null);
 		timer = new Timer(delay, new BotListener());
@@ -176,23 +194,60 @@ public class World extends JPanel{
         kill_button.setBounds(W - 170, 610, 125, 20);
         add(kill_button);
         //
+        sea_level_slider.setBounds(W - 300, 685, 250, 40);
+        sea_level_slider.setPaintLabels(true);
+        sea_level_slider.setMajorTickSpacing(10);
+        add(sea_level_slider);
+        //
+        mud_level_slider.setBounds(W - 300, 725, 250, 40);
+        mud_level_slider.setPaintLabels(true);
+        mud_level_slider.setMajorTickSpacing(10);
+        add(mud_level_slider);
+        //
+        pht_level_slider.setBounds(W - 300, 765, 250, 40);
+        pht_level_slider.setPaintLabels(true);
+        pht_level_slider.setMajorTickSpacing(5);
+        add(pht_level_slider);
+        //
+        no_pht_in_sea_slider.setBounds(W - 300, 805, 250, 40);
+        no_pht_in_sea_slider.setPaintLabels(true);
+        no_pht_in_sea_slider.setMajorTickSpacing(100);
+        add(no_pht_in_sea_slider);
+        //
+        no_pht_in_mud_slider.setBounds(W - 300, 845, 250, 40);
+        no_pht_in_mud_slider.setPaintLabels(true);
+        no_pht_in_mud_slider.setMajorTickSpacing(100);
+        add(no_pht_in_mud_slider);
+        //
+        move_y_slider.setBounds(W - 300, 885, 250, 40);
+        move_y_slider.setPaintLabels(true);
+        move_y_slider.setMajorTickSpacing(100);
+        add(move_y_slider);
+        //
+        land_multiply_slider.setBounds(W - 300, 925, 250, 40);
+        land_multiply_slider.setPaintLabels(true);
+        land_multiply_slider.setMajorTickSpacing(100);
+        add(land_multiply_slider);
+        //
+        sea_multiply_slider.setBounds(W - 300, 965, 250, 40);
+        sea_multiply_slider.setPaintLabels(true);
+        sea_multiply_slider.setMajorTickSpacing(100);
+        add(sea_multiply_slider);
+        //
+        on_land_slider.setBounds(W - 300, 1005, 250, 40);
+        on_land_slider.setPaintLabels(true);
+        on_land_slider.setMajorTickSpacing(100);
+        add(on_land_slider);
 		timer.start();
 	}
 	public void paintComponent(Graphics canvas) {
 		super.paintComponent(canvas);
-		//for (int x = 0; x < 162; x++) {
-		//	for (int y = 0; y < 108; y++) {
-		//		if (Map[x][y] == 1) {
-		//			canvas.setColor(green);
-		//			canvas.fillRect(x * 10, y * 10, 10, 10);
-		//		}else if (Map[x][y] == 2){
-		//			canvas.setColor(red);
-		//			canvas.fillRect(x * 10, y * 10, 10, 10);
-		//		}
-		//	}
-		//}
 		canvas.setColor(white);
 		canvas.fillRect(0, 0, world_scale[0] * 10, world_scale[1] * 10);
+		canvas.setColor(new Color(0, 84, 112));
+		canvas.fillRect(0, H - sea_level * 10, W - 300, sea_level * 10);
+		canvas.setColor(new Color(128, 70, 0));
+		canvas.fillRect(0, H - mud_level * 10, W - 300, mud_level * 10);
 		if (render) {
 			for(Bot b: objects) {
 				b.Draw(canvas, draw_type);
@@ -237,6 +292,16 @@ public class World extends JPanel{
 		canvas.drawString("Load:", W - 300, 520);
 		canvas.drawString("enter name:", W - 300, 540);
 		canvas.drawString("Controls:", W - 300, 605);
+		canvas.drawString("Adaptation:", W - 300, 675);
+		canvas.drawString(String.valueOf(sea_level), W - 40, 705);
+		canvas.drawString(String.valueOf(mud_level), W - 40, 745);
+		canvas.drawString(String.valueOf(pht_level), W - 40, 785);
+		canvas.drawString(String.valueOf(no_pht_in_sea), W - 40, 825);
+		canvas.drawString(String.valueOf(no_pht_in_mud), W - 40, 865);
+		canvas.drawString(String.valueOf(move_y), W - 40, 905);
+		canvas.drawString(String.valueOf(land_multiply), W - 40, 945);
+		canvas.drawString(String.valueOf(sea_multiply), W - 40, 985);
+		canvas.drawString(String.valueOf(on_land), W - 40, 1025);
 		if (selection != null) {
 			canvas.drawString("energy: " + String.valueOf(selection.energy) + ", minerals: " + String.valueOf(selection.minerals), W - 300, 320);
 			canvas.drawString("age: " + String.valueOf(selection.age), W - 300, 340);
@@ -459,15 +524,25 @@ public class World extends JPanel{
 			}
 		}
 		public void actionPerformed(ActionEvent e) {
+			sea_level = sea_level_slider.getValue();
+			mud_level = mud_level_slider.getValue();
+			pht_level = pht_level_slider.getValue();
+			no_pht_in_sea = no_pht_in_sea_slider.getValue();
+			no_pht_in_mud = no_pht_in_mud_slider.getValue();
+			sea_multiply = sea_multiply_slider.getValue();
+			land_multiply = land_multiply_slider.getValue();
+			move_y = move_y_slider.getValue();
+			on_land = on_land_slider.getValue();
 			if (!pause) {
 				steps++;
 				b_count = 0;
 				obj_count = 0;
 				org_count = 0;
 				ListIterator<Bot> bot_iterator = objects.listIterator();
+				int[] adaptation = {sea_level, mud_level, pht_level, no_pht_in_sea, no_pht_in_mud, move_y, land_multiply, sea_multiply, on_land};
 				while (bot_iterator.hasNext()) {
 					Bot next_bot = bot_iterator.next();
-					next_bot.Update(bot_iterator);
+					next_bot.Update(bot_iterator, adaptation);
 					if (selection != null) {
 						if (next_bot.xpos == selection.xpos && next_bot.ypos == selection.ypos) {
 							if (next_bot != selection) {
