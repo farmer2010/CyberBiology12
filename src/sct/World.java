@@ -201,7 +201,7 @@ public class World extends JPanel{
 		canvas.setColor(black);
 		canvas.setFont(new Font("arial", Font.BOLD, 18));
 		canvas.drawString("Main: ", W - 300, 20);
-		canvas.drawString("version 1.1", W - 300, 40);
+		canvas.drawString("version 1.2", W - 300, 40);
 		canvas.drawString("steps: " + String.valueOf(steps), W - 300, 60);
 		canvas.drawString("objects: " + String.valueOf(obj_count) + ", bots: " + String.valueOf(b_count), W - 300, 80);
 		if (draw_type == 0) {
@@ -391,7 +391,7 @@ public class World extends JPanel{
 								}
 							}
 							for (int i = 0; i < 8; i++) {
-								for (int j = 0; j < 2; j++) {
+								for (int j = 0; j < 4; j++) {
 									for (int k = 0; k < 2; k++) {
 										new_bot.commands[i][j][k] = for_set_commands[i][j][k];
 									}
@@ -435,7 +435,7 @@ public class World extends JPanel{
 								}
 							}
 							for (int i = 0; i < 8; i++) {
-								for (int j = 0; j < 2; j++) {
+								for (int j = 0; j < 4; j++) {
 									for (int k = 0; k < 2; k++) {
 										new_bot.commands[i][j][k] = for_set_commands[i][j][k];
 									}
@@ -636,7 +636,7 @@ public class World extends JPanel{
 			txt += ";";
 			//
 			for (int i = 0; i < 8; i++) {
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 4; j++) {
 					for (int k = 0; k < 2; k++) {
 						txt += String.valueOf(selection.commands[i][j][k]) + " ";
 					}
@@ -664,7 +664,7 @@ public class World extends JPanel{
 			try {
 				for_set_operators = new int[7][2];
 				for_set_conditions = new int[7][3][9];
-				for_set_commands = new int[8][2][2];
+				for_set_commands = new int[8][4][2];
 				
 	            FileReader fileReader = new FileReader("saved objects/" + for_load.getText() + ".dat");
 	            BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -695,7 +695,7 @@ public class World extends JPanel{
 	            String[] sec2_layers = sec[2].split("/");
 	            for (int i = 0; i < 8; i++) {
 	            	String[] sec2_layer = sec2_layers[i].split(":");
-					for (int j = 0; j < 2; j++) {
+					for (int j = 0; j < 4; j++) {
 						String[] sec2_symbols = sec2_layer[j].split(" ");
 						for (int k = 0; k < 2; k++) {
 							for_set_commands[i][j][k] = Integer.parseInt(sec2_symbols[k]);

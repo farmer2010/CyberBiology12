@@ -25,7 +25,7 @@ file.close()
 
 operators = [[0 for j in range(2)] for i in range(7)]
 conditions = [[[0 for k in range(9)] for j in range(3)] for i in range(7)]
-commands = [[[0 for k in range(2)] for j in range(2)] for i in range(8)]
+commands = [[[0 for k in range(2)] for j in range(4)] for i in range(8)]
 
 genom_view = ["" for i in range(16)]
 genom_view[14] = "иначе:"
@@ -49,7 +49,7 @@ for i in range(7):
 sec2_layers = sec[2].split("/")
 for i in range(8):
     sec2_layer = sec2_layers[i].split(":")
-    for j in range(2):
+    for j in range(4):
         sec2_symbols = sec2_layer[j].split(" ")
         for k in range(2):
             commands[i][j][k] = int(sec2_symbols[k])
@@ -199,7 +199,7 @@ def command_to_text(cmd):
 
 def layer_command_to_text(layer_command):
     ret = ""
-    for i in range(2):
+    for i in range(4):
         ret += command_to_text(layer_command[i])
         ret += "; "
     return(ret)

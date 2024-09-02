@@ -16,7 +16,7 @@ public class Main{
 		//
 		new File("saved objects").mkdirs();
 		//запуск программы
-		JFrame frame = new JFrame("Cyber biology 12 v1.1");
+		JFrame frame = new JFrame("Cyber biology 12 v1.2");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(new World());
 		frame.setSize(1920, 1080);

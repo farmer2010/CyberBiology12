@@ -21,7 +21,8 @@ public class Bot{
 	public int[][] map;
 	public int[][] operators = new int[7][2];
 	public int[][][] conditions = new int[7][3][9];
-	public int[][][] commands = new int[8][2][2];
+	public int[][][] commands = new int[8][4][2];
+	private int[] indexes = new int[8];
 	public int memory = 0;
 	public int age = 1000;
 	public int state = 0;//бот или органика
@@ -80,7 +81,7 @@ public class Bot{
 			}
 		}
 		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 2; j++) {
+			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 2; k++) {
 					commands[i][j][k] = rand.nextInt(64);
 				}
@@ -301,14 +302,16 @@ public class Bot{
 		return(ret);
 	}
 	public void command(int index, ListIterator<Bot> iterator) {
-		for (int i = 0; i < 2; i++) {
-			int[] command = commands[index][i];
+		for (int i = 0; i < 4; i++) {
+			int[] command = commands[index][indexes[index]];
 			if (command[0] % 32 == 0 || command[0] % 32 == 25) {//фотосинтез
 				int sector = bot_in_sector();
 				if (sector <= 5) {
 					energy += photo_list[sector];
 					c_green += 1;
 				}
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 1 || command[0] % 32 == 26) {//минералы в энергию
 				if (minerals > 0) {
@@ -316,81 +319,129 @@ public class Bot{
 				}
 				energy += minerals * 4;
 				minerals = 0;
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 2 || command[0] % 32 == 27) {//походить абсолютно
 				int sens = move(rotate);
 				if (sens == 1) {
 					energy -= 1;
 				}
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 3 || command[0] % 32 == 28) {//походить относительно
 				int sens = move(command[1] % 8);
 				if (sens == 1) {
 					energy -= 1;
 				}
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 4 || command[0] % 32 == 29) {//атаковать абсолютно
 				attack(rotate);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 5 || command[0] % 32 == 30) {//атаковать относительно
 				attack(command[1] % 8);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 6 || command[0] % 32 == 31) {//повернуться
 				rotate += command[1] % 8;
 				rotate %= 8;
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 7) {//сменить направление
 				rotate = command[1] % 8;
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 8) {//отдать часть ресурсов абсолютно
 				give(rotate);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 9) {//отдать часть ресурсов относительно
 				give(command[1] % 8);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 10) {//равномерное распределение ресурсов абсолютно
 				give2(rotate);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 11) {//равномерное распределение ресурсов относительно
 				give2(command[1] % 8);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 12) {//поделиться абсолютно
 				multiply(rotate, iterator);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 13) {//поделиться относительно
 				multiply(command[1] % 8, iterator);
+				indexes[index]++;
+				indexes[index] %= 4;
 				break;
 			}else if (command[0] % 32 == 14) {//установить направление в случайное
 				rotate = rand.nextInt(8);
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 15) {//записать в память число
 				memory = command[1];
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 16) {//записать в память случайное число
 				memory = rand.nextInt(64);
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 17) {//прибавить к памяти число
 				memory += command[1];
 				if (memory > 63) {
 					memory = 63;
 				}
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 18) {//записать энергию в память
 				int m = (int)(energy / 1000.0 * 63);
 				if (m > 63) {
 					m = 63;
 				}
 				memory = m;
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 19) {//записать минералы в память
 				int m = (int)(minerals / 1000.0 * 63);
 				if (m > 63) {
 					m = 63;
 				}
 				memory = m;
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 20) {//записать возраст в память
 				memory = (int)(age / 1000.0 * 63);
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 21) {//записать направление в память
 				memory = rotate * 8;
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 22) {//записать зрение в память
 				memory = see(rotate) * 15;
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 23) {//рекомбинация относительно
 				recombination(command[1] % 8);
+				indexes[index]++;
+				indexes[index] %= 4;
 			}else if (command[0] % 32 == 24) {//рекомбинация абсолютно
 				recombination(rotate);
+				indexes[index]++;
+				indexes[index] %= 4;
 			}
 		}
 	}
@@ -409,7 +460,7 @@ public class Bot{
 					//
 					int[][] new_operators = new int[7][2];
 					int[][][] new_conditions = new int[7][3][9];
-					int[][][] new_commands = new int[8][2][2];
+					int[][][] new_commands = new int[8][4][2];
 					//
 					for (int i = 0; i < 7; i++) {
 						if (rand.nextInt(2) == 0) {
@@ -439,13 +490,13 @@ public class Bot{
 					}
 					for (int i = 0; i < 8; i++) {
 						if (rand.nextInt(2) == 0) {
-							for (int j = 0; j < 2; j++) {
+							for (int j = 0; j < 4; j++) {
 								for (int k = 0; k < 2; k++) {
 									new_commands[i][j][k] = commands[i][j][k];
 								}
 							}
 						}else {
-							for (int j = 0; j < 2; j++) {
+							for (int j = 0; j < 4; j++) {
 								for (int k = 0; k < 2; k++) {
 									new_commands[i][j][k] = b.commands[i][j][k];
 								}
@@ -468,7 +519,7 @@ public class Bot{
 						}
 					}
 					for (int i = 0; i < 8; i++) {
-						for (int j = 0; j < 2; j++) {
+						for (int j = 0; j < 4; j++) {
 							for (int k = 0; k < 2; k++) {
 								commands[i][j][k] = new_commands[i][j][k];
 								b.commands[i][j][k] = new_commands[i][j][k];
@@ -598,7 +649,7 @@ public class Bot{
 				}else {
 					map[pos[0]][pos[1]] = 1; 
 					Color new_color = color;
-					if (rand.nextInt(100) == 0) {
+					if (rand.nextInt(500) == 0) {
 						new_color = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
 					}else {
 						new_color = new Color(border(color.getRed() + rand.nextInt(-12, 12), 255, 0), border(color.getGreen() + rand.nextInt(-12, 12), 255, 0), border(color.getBlue() + rand.nextInt(-12, 12), 255, 0));
@@ -606,7 +657,7 @@ public class Bot{
 					//
 					int[][] new_operators = new int[7][2];
 					int[][][] new_conditions = new int[7][3][9];
-					int[][][] new_commands = new int[8][2][2];
+					int[][][] new_commands = new int[8][4][2];
 					for (int i = 0; i < 7; i++) {
 						for (int j = 0; j < 2; j++) {
 							new_operators[i][j] = operators[i][j];
@@ -620,7 +671,7 @@ public class Bot{
 						}
 					}
 					for (int i = 0; i < 8; i++) {
-						for (int j = 0; j < 2; j++) {
+						for (int j = 0; j < 4; j++) {
 							for (int k = 0; k < 2; k++) {
 								new_commands[i][j][k] = commands[i][j][k];
 							}
