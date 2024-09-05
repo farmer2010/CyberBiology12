@@ -201,7 +201,7 @@ public class World extends JPanel{
 		canvas.setColor(black);
 		canvas.setFont(new Font("arial", Font.BOLD, 18));
 		canvas.drawString("Main: ", W - 300, 20);
-		canvas.drawString("version 1.2", W - 300, 40);
+		canvas.drawString("version 1.3", W - 300, 40);
 		canvas.drawString("steps: " + String.valueOf(steps), W - 300, 60);
 		canvas.drawString("objects: " + String.valueOf(obj_count) + ", bots: " + String.valueOf(b_count), W - 300, 80);
 		if (draw_type == 0) {

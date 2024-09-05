@@ -452,11 +452,6 @@ public class Bot{
 				Bot b = find(pos);
 				if (b != null) {
 					recomb_time = 9;
-					int red = (color.getRed() + b.color.getRed()) / 2;
-					int green = (color.getGreen() + b.color.getGreen()) / 2;
-					int blue = (color.getBlue() + b.color.getBlue()) / 2;
-					color = new Color(red, green, blue);
-					b.color = new Color(red, green, blue);
 					//
 					int[][] new_operators = new int[7][2];
 					int[][][] new_conditions = new int[7][3][9];
@@ -489,14 +484,12 @@ public class Bot{
 						}
 					}
 					for (int i = 0; i < 8; i++) {
-						if (rand.nextInt(2) == 0) {
-							for (int j = 0; j < 4; j++) {
+						for (int j = 0; j < 4; j++) {
+							if (rand.nextInt(2) == 0) {
 								for (int k = 0; k < 2; k++) {
 									new_commands[i][j][k] = commands[i][j][k];
 								}
-							}
-						}else {
-							for (int j = 0; j < 4; j++) {
+							}else {
 								for (int k = 0; k < 2; k++) {
 									new_commands[i][j][k] = b.commands[i][j][k];
 								}
